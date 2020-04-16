@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # [START app]
+"""
 import logging
 
 # [START imports]
@@ -56,3 +57,63 @@ def server_error(e):
     logging.exception('An error occurred during a request.')
     return 'An internal error occurred.', 500
 # [END app]
+if __name__ == '__main__':
+    # This is used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    app.run(host='127.0.0.1', port=8080, debug=True)
+# [END gae_python37_app]
+"""
+from flask import Flask
+
+
+# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
+# called `app` in `main.py`.
+app = Flask(__name__)
+
+
+@app.route('/')
+def hello():
+    """Return a friendly HTTP greeting."""
+    return 'Hello World!'
+
+
+# [START form]
+@app.route('/form')
+def form():
+    return render_template('form.html')
+# [END form]
+
+
+# [START submitted]
+@app.route('/submitted', methods=['POST'])
+def submitted_form():
+    name = request.form['name']
+    email = request.form['email']
+    site = request.form['site_url']
+    comments = request.form['comments']
+
+    # [END submitted]
+    # [START render_template]
+    return render_template(
+        'submitted_form.html',
+        name=name,
+        email=email,
+        site=site,
+        comments=comments)
+    # [END render_template]
+
+
+@app.errorhandler(500)
+def server_error(e):
+    # Log the error and stacktrace.
+    logging.exception('An error occurred during a request.')
+    return 'An internal error occurred.', 500
+# [END app]
+
+if __name__ == '__main__':
+    # This is used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    app.run(host='127.0.0.1', port=8080, debug=True)
+# [END gae_python37_app]
